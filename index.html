@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neumorphic Music Player</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --bg-color: #e0e5ec; /* Light background for neumorphism */
+        --main-color: #2c3e50; /* Dark color for text and icons */
+        --accent-color: #ff4d4f; /* Red for heart/active states */
+        --shadow-light: #ffffff;
+        --shadow-dark: #a3b1c6;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: var(--bg-color);
+    }
+
+    .card-player {
+        width: 320px;
+        background: var(--bg-color);
+        border-radius: 25px;
+        padding-top: 80px;
+        padding-left: 25px;
+        padding-right: 25px;
+        padding-bottom: 25px;
+        box-shadow: 8px 8px 15px var(--shadow-dark),
+                    -8px -8px 15px var(--shadow-light);
+        position: relative;
+        overflow: visible;
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .album-art {
+        position: absolute;
+        top: -30px;
+        left: -100px;
+        width: 300px;
+        height: 200px;
+        border-radius: 15px;
+        background: url('https://vumbnail.com/195091640.jpg') no-repeat center center/cover;
+        box-shadow: 8px 8px 15px var(--shadow-dark);
+        z-index: 2;
+    }
+
+    .header-content-row {
+        display: flex;
+        justify-content: flex-end;
+        margin-left: 170px;
+        margin-top: -60px;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .icon-btn {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: var(--bg-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        box-shadow: 4px 4px 8px var(--shadow-dark),
+                    -4px -4px 8px var(--shadow-light);
+        transition: all 0.2s ease;
+        position: relative;
+        color: var(--main-color); /* Base color for icons */
+    }
+
+    .icon-btn:active {
+        box-shadow: inset 2px 2px 5px var(--shadow-dark),
+                    inset -2px -2px 5px var(--shadow-light);
+        color: var(--main-color);
+    }
+
+    /* Generic pseudo-element styles for other icons (Share, Prev, Next, Play/Pause) */
+    .icon-btn::before, .icon-btn::after {
+        content: ''; /* Ensure it's empty for icons that don't need it */
+        position: absolute;
+        display: block;
+        transition: all 0.2s ease;
+    }
+
+    /* --- Heart Icon with SVG --- */
+    .icon-btn .heart-svg {
+        width: 24px; /* Adjust size of the SVG heart */
+        height: 24px;
+        fill: var(--main-color); /* Default color for the SVG path */
+        transition: fill 0.2s ease; /* Smooth transition for color change */
+        /* Ensure it's centered within its flex container parent (.icon-btn) */
+        flex-shrink: 0; /* Prevent it from shrinking */
+    }
+
+    .icon-btn.heart.liked .heart-svg {
+        fill: var(--accent-color); /* Color when liked */
+    }
+
+    /* Share Icon */
+    .icon-btn.share::before {
+        width: 12px;
+        height: 2px;
+        background: var(--main-color);
+        transform: translateX(4px);
+    }
+    .icon-btn.share::after {
+        width: 0;
+        height: 0;
+        border-top: 4px solid transparent;
+        border-bottom: 4px solid transparent;
+        border-left: 6px solid var(--main-color);
+        transform: translateX(10px);
+    }
+
+    /* Prev/Next Buttons Icons */
+    .icon-btn.prev::before,
+    .icon-btn.next::before {
+        width: 0; height: 0; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-right: 8px solid var(--main-color);
+        transform: translateX(3px);
+    }
+    .icon-btn.prev::after,
+    .icon-btn.next::after {
+        width: 4px;
+        height: 12px;
+        background: var(--main-color);
+        transform: translateX(-10px);
+    }
+    .icon-btn.next::before {
+        border-left: 8px solid var(--main-color);
+        border-right: none;
+        transform: translateX(-3px);
+    }
+    .icon-btn.next::after {
+        transform: translateX(10px);
+    }
+
+    /* Play/Pause Button Icons */
+    .icon-btn.play-pause::before {
+        width: 0;
+        height: 0;
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+        border-left: 14px solid var(--main-color);
+        transform: translateX(2px);
+        transition: all 0.2s ease;
+    }
+    .icon-btn.play-pause.playing::before {
+        width: 6px;
+        height: 18px;
+        background: var(--main-color);
+        border: none;
+        transform: translateX(-6px);
+        box-shadow: 12px 0 var(--main-color);
+    }
+
+    .song-info {
+        text-align: center;
+        color: var(--main-color);
+    }
+    .artist-name {
+        font-weight: 600;
+        font-size: 1.1em;
+        display: block;
+    }
+    .song-title {
+        font-weight: 400;
+        font-size: 0.9em;
+        opacity: 0.8;
+    }
+
+    .time-progress {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.75em;
+        color: var(--main-color);
+        opacity: 0.7;
+    }
+
+    .progress-bar {
+        flex-grow: 1;
+        height: 6px;
+        background: var(--shadow-dark);
+        border-radius: 3px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: inset 1px 1px 3px rgba(0,0,0,0.2);
+    }
+    .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: var(--main-color);
+        border-radius: 3px;
+        transition: width 0.1s linear;
+    }
+    
+    .current-time, .total-time {
+        min-width: 40px;
+        text-align: center;
+    }
+</style>
+</head>
+<body>
+    <div class="card-player">
+        <div class="album-art"></div>
+        <div class="header-content-row">
+            <div class="action-buttons">
+                <div class="icon-btn heart" onclick="toggleHeart()">
+                    <svg class="heart-svg" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <div class="icon-btn share" onclick="shareSong()"></div>
+                <div class="icon-btn prev" onclick="prevSong()"></div>
+                <div class="icon-btn next" onclick="nextSong()"></div>
+                <div class="icon-btn play-pause" onclick="togglePlayPause()"></div>
+            </div>
+        </div>
+        <div class="song-info">
+            <span class="artist-name"></span>
+            <span class="song-title"></span>
+        </div>
+        <div class="time-progress">
+            <span class="current-time">00:00</span>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span class="total-time" id="totalTime">00:00</span>
+        </div>
+    </div>
+
+    <script>
+        const albumArt = document.querySelector('.album-art');
+        const artistName = document.querySelector('.artist-name');
+        const songTitle = document.querySelector('.song-title');
+        const currentTimeSpan = document.querySelector('.current-time');
+        const totalTimeSpan = document.getElementById('totalTime');
+        const progressFill = document.getElementById('progressFill');
+        const playPauseButton = document.querySelector('.icon-btn.play-pause');
+
+        let isPlaying = false;
+        let currentProgress = 0; // in seconds
+        let totalDuration = 0;
+        let progressInterval;
+
+        const songs = [
+            {
+                artist: "Leonard Cohen",
+                title: "Everybody Knows",
+                albumArt: "https://vumbnail.com/195091640.jpg", // Vimeo thumbnail
+                duration: 225 // Example: 3 minutes 45 seconds
+            },
+            {
+                artist: "Pink Floyd",
+                title: "Comfortably Numb",
+                albumArt: "https://images.unsplash.com/photo-1519702677942-881c9a623789?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                duration: 382
+            },
+            {
+                artist: "The Beatles",
+                title: "Hey Jude",
+                albumArt: "https://images.unsplash.com/photo-1518770660431-406085a21e2c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDBwYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                duration: 431
+            }
+        ];
+
+        let currentSongIndex = 0;
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = Math.floor(seconds % 60);
+            return `${minutes < 10 ? '0' : ''}${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+        }
+
+        function loadSong(index) {
+            const song = songs[index];
+            albumArt.style.backgroundImage = `url('${song.albumArt}')`;
+            artistName.textContent = song.artist;
+            songTitle.textContent = song.title;
+            totalDuration = song.duration;
+            totalTimeSpan.textContent = formatTime(totalDuration);
+            currentProgress = 0;
+            currentTimeSpan.textContent = formatTime(currentProgress);
+            progressFill.style.width = '0%';
+        }
+
+        function updateProgress() {
+            if (isPlaying) {
+                currentProgress++;
+                if (currentProgress > totalDuration) {
+                    currentProgress = 0;
+                    nextSong();
+                    return;
+                }
+                const percentage = (currentProgress / totalDuration) * 100;
+                progressFill.style.width = percentage + '%';
+                currentTimeSpan.textContent = formatTime(currentProgress);
+            }
+        }
+
+        function togglePlayPause() {
+            isPlaying = !isPlaying;
+            playPauseButton.classList.toggle('playing', isPlaying);
+
+            if (isPlaying) {
+                if (!progressInterval) {
+                    progressInterval = setInterval(updateProgress, 1000);
+                }
+            } else {
+                clearInterval(progressInterval);
+                progressInterval = null;
+            }
+        }
+
+        function prevSong() {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            loadSong(currentSongIndex);
+            if (!isPlaying) togglePlayPause();
+            console.log("Previous song");
+        }
+
+        function nextSong() {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            loadSong(currentSongIndex);
+            if (!isPlaying) togglePlayPause();
+            console.log("Next song");
+        }
+
+        function toggleHeart() {
+            const heartBtn = document.querySelector('.icon-btn.heart');
+            heartBtn.classList.toggle('liked');
+            console.log("Heart toggled!");
+        }
+
+        function shareSong() {
+            console.log("Share button clicked!");
+            alert("Sharing feature not implemented yet!");
+        }
+
+        loadSong(currentSongIndex);
+
+        document.querySelector('.progress-bar').addEventListener('click', function(e) {
+            const progressBar = this.getBoundingClientRect();
+            const clickX = e.clientX - progressBar.left;
+            const newPercentage = (clickX / progressBar.width);
+            currentProgress = Math.round(newPercentage * totalDuration);
+            progressFill.style.width = (newPercentage * 100) + '%';
+            currentTimeSpan.textContent = formatTime(currentProgress);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/stock_data.css' %}">
+{% endblock extra_head %}
+
+{% block content %}
+    <div class="w-full max-w-4xl mb-6 flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 p-4 bg-slate-800 rounded-xl shadow-lg mt-4">
+        <input type="text" id="searchBox" placeholder="Enter company name or ticker (e.g., Tata Motors)"
+               list="companySuggestions"
+               class="flex-grow p-3 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-slate-600 w-full sm:w-auto">
+        <datalist id="companySuggestions">
+            <!-- Options populated by JS -->
+        </datalist>
+        <button id="searchButton"
+                class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-300 ease-in-out w-full sm:w-auto">
+            Search Stock
+        </button>
+    </div>
+
+    <div id="stocksContainer" class="scrollable-container w-full max-w-4xl">
+        <!-- Stock cards appear here -->
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+    const companyNames = {{ company_names_json|safe }};
+
+    const companySuggestionsDatalist = document.getElementById('companySuggestions');
+    companyNames.forEach(name => {
+        const option = document.createElement('option');
+        option.value = name;
+        companySuggestionsDatalist.appendChild(option);
+    });
+
+    function addCard(metrics) {
+        const companyName = metrics["Company Name"] || "Unknown Company";
+        const currentPrice = metrics["Current Price"] !== undefined ? parseFloat(metrics["Current Price"]).toFixed(2) : "N/A";
+        const percentageChange = metrics["Percentage Change"] || "0.00";
+        const companyWebsite = metrics["Website"] || "#";
+        const nseCode = metrics["NSE Code"] || "TATAMOTORS";
+
+        const ticker = `NSE:${nseCode}`;
+
+        const percentageValue = parseFloat(percentageChange) || 0.0;
+        const percentageColor = percentageValue >= 0 ? 'text-green-500' : 'text-red-500';
+        const domainName = companyWebsite.replace(/^(https?:\/\/)?(www\.)?/, '');
+
+        const orderedMetrics = [
+            {"label": "Market Cap", "key": "Market Cap"},
+            {"label": "Book Value", "key": "Book Value"},
+            {"label": "Stock P/E", "key": "P/E"},
+            {"label": "High/Low", "key": "High/Low"},
+            {"label": "ROCE", "key": "ROCE"},
+            {"label": "ROE", "key": "ROE"},
+            {"label": "Face Value", "key": "Face Value"},
+            {"label": "Dividend Yield", "key": "Dividend Yield"}
+        ];
+
+        const metricsHtml = orderedMetrics.map(metric => {
+            const value = metrics[metric.key] || "N/A";
+            return `
+                <div class="metric-item">
+                    <span class="metric-label">${metric.label}</span>
+                    <span class="metric-value">${value}</span>
+                </div>
+            `;
+        }).join('');
+
+        const card = document.createElement('div');
+        card.className = 'stock-card';
+
+        const containerId = `tradingview_${nseCode}`;
+
+        const encodedSymbol = encodeURIComponent(ticker);
+
+        card.innerHTML = `
+            <div class="stock-header">
+                <div class="flex items-baseline space-x-4">
+                    <span class="company-name">${companyName}</span>
+                    <span class="price">₹${currentPrice}</span>
+                    <span class="percentage-change ${percentageColor}">(${percentageChange}%)</span>
+                </div>
+            </div>
+
+            <div class="stock-meta">
+                <a href="${companyWebsite}" target="_blank">${domainName}</a>
+                <span>BSE: ${metrics["BSE Code"] || "N/A"}</span>
+                <span>NSE: ${nseCode}</span>
+            </div>
+
+            <div class="stock-body">
+                <div class="metrics-box">
+                    <div class="metrics-grid">
+                        ${metricsHtml}
+                    </div>
+                </div>
+                <div class="chart-box">
+                    <iframe src="https://s.tradingview.com/embed-widget/technical-analysis/?locale=en#%7B%22symbol%22%3A%22${encodedSymbol}%22%2C%22interval%22%3A%221m%22%2C%22width%22%3A%22300%22%2C%22height%22%3A%22200%22%2C%22isTransparent%22%3Afalse%2C%22colorTheme%22%3A%22dark%22%2C%22showIntervalTabs%22%3Atrue%2C%22displayMode%22%3A%22single%22%7D"
+                        width="100%" 
+                        height="400" 
+                        frameborder="0" 
+                        allowtransparency="true" 
+                        scrolling="no">
+                    </iframe>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('stocksContainer').appendChild(card);
+
+        console.log("TradingView symbol used:", ticker);
+    }
+
+    async function fetchCompanyData(companyName) {
+        document.getElementById('stocksContainer').innerHTML = '';
+
+        try {
+            const response = await fetch(`/api/stock-data/?company_name=${encodeURIComponent(companyName)}`);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+            }
+            const metrics = await response.json();
+            addCard(metrics);
+        } catch (error) {
+            console.error("Error fetching stock data:", error);
+            const errorCard = document.createElement('div');
+            errorCard.className = 'bg-red-800 text-white p-4 rounded-lg shadow-md max-w-2xl w-full text-center';
+            errorCard.textContent = `Failed to load stock data for "${companyName}". Error: ${error.message}`;
+            document.getElementById('stocksContainer').appendChild(errorCard);
+        }
+    }
+
+    document.getElementById('searchButton').addEventListener('click', () => {
+        const searchBox = document.getElementById('searchBox');
+        fetchCompanyData(searchBox.value.trim());
+    });
+
+    document.getElementById('searchBox').addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+            document.getElementById('searchButton').click();
+        }
+    });
+
+    window.addEventListener('load', () => {
+        fetchCompanyData("Tata Motors");
+    });
+</script>
+{% endblock extra_js %}

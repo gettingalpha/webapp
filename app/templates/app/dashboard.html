@@ -1,0 +1,227 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Stock Monitor Dashboard{% endblock %}
+
+{% block extra_head %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/style_dashboard.css' %}" />
+{% endblock extra_head %}
+
+{% block content %}
+
+<div class="dashboard-container">
+   <div class="index-alertx-card"> 
+    <div class="nifty-card index-card">
+        <div class="index-title">Nifty 50</div>
+        <div class="index-row">
+            <div class="index-value">{{ nifty_sensex.nifty_close|floatformat:2 }}</div>
+            <div class="index-change {{ nifty_sensex.nifty_percentage_color }}">
+                {{ nifty_sensex.nifty_triangle_symbol }} {{ nifty_sensex.nifty_percentage|floatformat:2 }}%
+            </div>
+        </div>
+    </div>
+
+    <div class="sensex-card index-card">
+        <div class="index-title">Sensex</div>
+        <div class="index-row">
+            <div class="index-value">{{ nifty_sensex.sensex_close|floatformat:2 }}</div>
+            <div class="index-change {{ nifty_sensex.sensex_percentage_color }}">
+                {{ nifty_sensex.sensex_triangle_symbol }} {{ nifty_sensex.sensex_percentage|floatformat:2 }}%
+            </div>
+        </div>
+    </div>
+
+    <div class="alertx-card index-card">
+        <div class="alert-x-container">
+            <span class="alert-text">alert</span><span class="x-text">X</span>
+        </div>
+    </div>
+</div>
+    <div class="commodity-card card">
+        <div class="section-title">Commodities</div>
+        <div class="commodity-list">
+        {% for name, details in commodities.items %}
+            <div class="commodity-item">
+                <img src="{% static 'images/' %}{{ name|lower }}.png" alt="{{ name }}">
+                <span class="name">{{ name }}:</span>
+                <span class="price">{{ details.Price }}</span>
+                <span class="change {{ details.Color }}">
+                    {{ details.Triangle }} {% if details.Change != "N/A" %}{{ details.Change|floatformat:2 }}%{% else %}N/A{% endif %}
+                </span>
+            </div>
+        {% endfor %}
+      </div> 
+    </div>
+
+    <div class="chart-card card">
+        <div class="section-title">{{ gainer_name }} Stock Performance</div>
+        <div class="chart-controls">
+            <label for="time-period-select">Period:</label>
+            <select id="time-period-select">
+                <option value="1 Day">1 Day</option>
+                <option value="1 Month">1 Month</option>
+                <option value="1 Year" selected>1 Year</option>
+            </select>
+            <div class="chart-info">
+                <span id="chart-value" class="chart-value"></span>
+                <span id="chart-percent" class="chart-percent"></span>
+            </div>
+        </div>
+        <canvas id="stockChart"></canvas>
+    </div>
+
+    <div class="extra-card card">
+        <canvas id="stockChartFull"></canvas> 
+        {# Optional: If you want a larger chart separately, else remove this block #}
+    </div>
+
+    <div class="news-card card">
+        <div class="section-title">Latest News</div>
+        <div class="scrollable-content">
+            {% for news in news_items %}
+                <div class="news-item">
+                    <div class="news-title">{{ news.post_title }}</div>
+                    <div class="news-date">Published: {{ news.post_date }}</div>
+                    <a href="{{ news.post_url }}" target="_blank" class="news-link">More Info</a>
+                </div>
+            {% empty %}
+                <p>No news available.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="gainers-card card">
+        <div class="section-title">Gainers and Losers</div>
+        <h3>Top Gainers</h3>
+        <div class="scrollable-content">
+            {% for stock in top_gainers %}
+                <div class="gainer-loser-item">
+                    <img src="{% static stock.logo_path %}" alt="{{ stock.ticker|cut:".NS"|cut:".BO" }} Logo">
+                    <div class="stock-details">
+                        <div class="name">{{ stock.ticker|cut:".NS"|cut:".BO" }}</div>
+                        <div class="green">{{ stock.percent|floatformat:2 }}%</div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>No top gainers.</p>
+            {% endfor %}
+        </div>
+
+        <h3>Top Losers</h3>
+        <div class="scrollable-content">
+            {% for stock in top_losers %}
+                <div class="gainer-loser-item">
+                    <img src="{% static stock.logo_path %}" alt="{{ stock.ticker|cut:".NS"|cut:".BO" }} Logo">
+                    <div class="stock-details">
+                        <div class="name">{{ stock.ticker|cut:".NS"|cut:".BO" }}</div>
+                        <div class="red">{{ stock.percent|floatformat:2 }}%</div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>No top losers.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+    const gainerTicker = "{{ gainer_ticker }}";
+    const stockChartCanvas = document.getElementById('stockChart');
+    const timePeriodSelect = document.getElementById('time-period-select');
+    const chartValueLabel = document.getElementById('chart-value');
+    const chartPercentLabel = document.getElementById('chart-percent');
+    let stockChart;
+
+    async function updateStockChart() {
+        const period = timePeriodSelect.value;
+        try {
+            const response = await fetch(`/get_chart_data/?ticker=${gainerTicker}&period=${period}`);
+            const data = await response.json();
+
+            if (data.error) {
+                console.error("Error fetching chart data:", data.error);
+                return;
+            }
+
+            const chartData = data.data.map(item => ({ x: new Date(item[0]), y: item[1] }));
+            const lastPrice = data.last_price;
+            const percentChange = data.percent_change;
+            const isNegative = data.is_negative;
+
+            chartValueLabel.textContent = lastPrice;
+            chartPercentLabel.textContent = percentChange;
+            chartPercentLabel.className = isNegative ? 'chart-percent red' : 'chart-percent green';
+
+            if (stockChart) {
+                stockChart.destroy();
+            }
+
+            stockChart = new Chart(stockChartCanvas, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: 'Closing Price',
+                        data: chartData,
+                        borderColor: isNegative ? '#ff3333' : '#00ff99',
+                        backgroundColor: 'rgba(0, 0, 0, 0)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: period === '1 Day' ? 'minute' : 'day',
+                                tooltipFormat: 'MMM d, yyyy h:mm a',
+                                displayFormats: {
+                                    minute: 'h:mm a',
+                                    hour: 'hA',
+                                    day: 'MMM d',
+                                    month: 'MMM',
+                                    year: 'yyyy'
+                                }
+                            },
+                            ticks: { color: 'white', autoSkip: true, maxTicksLimit: 10 },
+                            grid: { display: false, drawBorder: false }
+                        },
+                        y: {
+                            ticks: {
+                                color: 'white',
+                                callback: value => '₹' + value.toLocaleString()
+                            },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)', drawBorder: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: ctx => `₹${ctx.parsed.y.toLocaleString()}`
+                            }
+                        }
+                    }
+                }
+            });
+
+        } catch (error) {
+            console.error("Failed to fetch chart data:", error);
+        }
+    }
+
+    timePeriodSelect.addEventListener('change', updateStockChart);
+    document.addEventListener('DOMContentLoaded', updateStockChart);
+</script>
+{% endblock extra_js %}

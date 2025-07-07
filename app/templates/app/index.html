@@ -1,0 +1,278 @@
+{% extends 'app/base.html' %}
+{% load static %} {# Still need this if you use static files within this template's specific content #}
+
+{% block title %}Getting ALPHA - Home{% endblock %} {# Custom title for the home page #}
+
+{% block content %}
+    <header class="hero">
+        <div class="container hero-content">
+            <div class="badge">FINANCIAL INTELLIGENCE</div>
+
+            <h1 class="hero-title">
+                Navigating the Financial Cosmos: Where
+                <span class="highlight" >ALPHA</span> Meets Opportunity.
+            </h1>
+
+            <p class="hero-subtitle">
+                AI-powered financial insights for smarter investment decisions.
+                Personalized alerts, portfolio optimization, and expert guidance.
+            </p>
+
+            <form class="hero-form" method="post" action="{% url 'app:subscribe_index' %}">
+                {% csrf_token %}
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Your email address"
+                    required
+                />
+                <button type="submit" class="btn form-btn">Open Account</button>
+            </form>
+
+            <div class="hero-extra">
+                <span>No hidden fees</span>
+                <span class="divider">•</span>
+                <span>Expert financial guidance</span>
+            </div>
+        </div>
+    </header>
+
+    <section id="alertx" class="features-hero">
+        <div class="container features-hero-grid">
+            <div class="features-hero-content">
+                <div class="features-badge">★ ALERTX</div>
+                <h2 class="features-hero-title">
+                    <span class="highlight">Personalized</span> Stock<br>
+                    Alerts for Your<br>
+                    Investment <span class="highlight">Portfolio</span>
+                </h2>
+                <p class="features-hero-subtitle">
+                    We leverage cutting-edge AI to curate relevant corporate announcements, news, social media updates, research, and more, providing you with actionable insights for the stocks you follow.
+                </p>
+
+                <div class="features-list" style="margin-bottom: 1.5rem;">
+                    <div class="feature-item">
+                        <svg class="feature-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                        </svg>
+                        <span><strong>On WhatsApp</strong> - Instant alerts delivered directly to your phone</span>
+                    </div>
+                    <div class="feature-item">
+                        <svg class="feature-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                        </svg>
+                        <span><strong>On Browser</strong> - Real-time notifications while you work</span>
+                    </div>
+                    <div class="feature-item">
+                        <svg class="feature-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                        </svg>
+                        <span><strong>On Email</strong> - Comprehensive digests and time-sensitive alerts</span>
+                    </div>
+                </div>
+
+                <a href="{% url 'app:alertx' %}" class="btn template-btn">Get Started</a>
+            </div>
+            <div class="features-hero-image">
+                <img src="{% static 'images/dashboard-mockup.png' %}" alt="Dashboard Interface" class="mockup-image">
+            </div>
+        </div>
+    </section>
+
+    <section class="features-hero features-hero-alt">
+        <div class="container features-hero-grid">
+            <div class="features-hero-image">
+                <img src="{% static 'images/task-dashboard-mockup.png' %}" alt="Alert Channels Dashboard" class="mockup-image">
+            </div>
+            <div class="features-hero-content">
+                <div class="features-badge">★ ALERT CHANNELS</div>
+                <h2 class="features-hero-title">
+                    Multi-channel<br>
+                    <span class="highlight">alert delivery</span>
+                </h2>
+                <p class="features-hero-subtitle">
+                    Never miss important financial updates with our comprehensive alert delivery system.
+                </p>
+                <div class="features-list">
+                    <div class="feature-item">
+                        <svg class="feature-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                        </svg>
+                        <span>WhatsApp alerts for instant notifications</span>
+                    </div>
+                    <div class="feature-item">
+                        <svg class="feature-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                        </svg>
+                        <span>Browser notifications for desktop updates</span>
+                    </div>
+                    <div class="feature-item">
+                        <svg class="feature-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                        </svg>
+                        <span>Email digests with comprehensive analysis</span>
+                    </div>
+                    <div class="feature-item">
+                        <svg class="feature-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                        </svg>
+                        <span>Customizable alert preferences and frequency</span>
+                    </div>
+                    <div class="feature-item">
+                        <svg class="feature-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                        </svg>
+                        <span>Priority alerts for critical market movements</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="solutions" class="features">
+        <div class="container">
+            <div class="features-header">
+                <div class="features-badge">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 2L1 12h3v9h6v-6h4v6h6v-9h3L12 2zm0 2.8L19.2 11H18v8h-4v-6H8v6H4v-8H2.8L12 4.8z"/>
+                    </svg>
+                    WEALTH CREATION
+                </div>
+                <h2 class="features-title">Systematic Investment Plans (SIPs)</h2>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-9h10v2H7z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Regular Investing</h3>
+                    <p class="feature-description">Consistently invest a fixed amount in mutual funds to build wealth over time</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-11h2v6h-2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Power of Compounding</h3>
+                    <p class="feature-description">Even small, regular investments grow significantly over time through compounding</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 2.18l6 2.67v5.15c0 4.54-3.16 8.79-6 9.91-2.84-1.12-6-5.37-6-9.91V5.85l6-2.67z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Start Early</h3>
+                    <p class="feature-description">Time is your greatest ally in building wealth - start your SIP journey early</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Beat Inflation</h3>
+                    <p class="feature-description">SIPs have historically outperformed fixed-income options and beaten inflation</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Flexibility</h3>
+                    <p class="feature-description">SIPs offer flexibility in terms of investment amount, frequency, and duration</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">Expert Guidance</h3>
+                    <p class="feature-description">Get personalized fund recommendations and strategic investment advice</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features-hero sip-section">
+        <div class="container">
+            <div class="sip-calculator-container">
+                <div class="sip-info">
+                    <div class="features-badge">★ CALCULATOR</div>
+                    <h2 class="features-hero-title">
+                        <span class="highlight">SIP</span> Calculator<br>
+                        Plan your financial<br>
+                        <span class="highlight">future</span> today
+                    </h2>
+                    <p class="features-hero-subtitle">
+                        Use our SIP calculator to estimate the future value of your systematic investments and plan your financial goals effectively.
+                    </p>
+                </div>
+
+                <div class="sip-calculator-widget">
+                    <div class="sip-calculator">
+                        <div class="input-group">
+                            <label>Monthly Investment:</label>
+                            <div class="input-control">
+                                <input id="monthly-investment" type="range" min="500" max="50000" step="500" value="5000">
+                            </div>
+                            <div class="range-values">
+                                <span>₹500</span>
+                                <input id="investment-value" type="number" min="500" max="50000" step="500" value="5000" class="value-input">
+                                <span>₹50,000</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Expected Return (%):</label>
+                            <div class="input-control">
+                                <input id="return-rate" type="range" min="5" max="15" step="0.5" value="12">
+                            </div>
+                            <div class="range-values">
+                                <span>5%</span>
+                                <input id="return-value" type="number" min="5" max="15" step="0.5" value="12" class="value-input">
+                                <span>15%</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Investment Period (years):</label>
+                            <div class="input-control">
+                                <input id="time-period" type="range" min="1" max="30" step="1" value="10">
+                            </div>
+                            <div class="range-values">
+                                <span>1 yr</span>
+                                <input id="year-value" type="number" min="1" max="30" step="1" value="10" class="value-input">
+                                <span>30 yrs</span>
+                            </div>
+                        </div>
+
+                        <button id="calculate-sip" class="btn template-btn">Calculate</button>
+
+                        <div class="sip-results">
+                            <div class="result-card invested">
+                                <h4>Invested Amount</h4>
+                                <p id="invested-amount">₹6,00,000</p>
+                            </div>
+                            <div class="result-card future">
+                                <h4>Future Value</h4>
+                                <p id="future-value">₹11,60,000</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock content %}

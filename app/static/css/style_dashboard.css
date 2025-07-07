@@ -1,0 +1,332 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #0f172a;
+    color: white;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    /* Reduced base font size */
+    font-size: 14px; /* Changed from default browser font size, typically 16px */
+}
+
+main {
+    flex: 1;
+    padding: 20px 0;
+    padding-top: 100px;
+    box-sizing: border-box;
+}
+
+.dashboard-container {
+    display: grid;
+    grid-template-areas:
+        "indexalertx indexalertx news news gainers"
+        "commodity extra news news gainers"
+        "chart chart news news gainers";
+    grid-template-columns: 320px 320px 1fr 1fr 250px;
+    grid-auto-rows: min-content;
+    gap: 20px;
+    max-width: 1400px;
+    margin: auto;
+    padding: 20px;
+}
+
+.index-alertx-card{
+    display: grid;
+    grid-template-areas:
+        "nifty sensex alertx";
+    grid-template-columns: 220px 220px 1fr;
+    grid-auto-rows: min-content;
+    gap: 20px;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap'); /* Example: replace with actual font import */
+
+.alert-x-container {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    font-size: 35px;
+    line-height: 1;
+    display: block; /* Change to block */
+    width: fit-content; /* This makes the block only as wide as its content */
+    margin-left: auto; /* Centers the block horizontally */
+    margin-right: auto; /* Centers the block horizontally */
+    /* background-color: #222; /* Optional: for background */
+    /* padding: 20px; /* Optional: for spacing */
+}
+
+.alert-text {
+    color: #FFFFFF;
+}
+
+.x-text {
+    color: rgb(160, 224, 13);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    transform: skewX(-5deg);
+    display: inline-block;
+}
+
+/* Grid area assignments */
+.index-alertx-card{grid-area: indexalertx;}
+.nifty-card { grid-area: nifty; }
+.sensex-card { grid-area: sensex; }
+.alertx-card { grid-area: alertx; }
+.commodity-card { grid-area: commodity; }
+.extra-card { grid-area: extra; }
+.chart-card { grid-area: chart; }
+.news-card { grid-area: news; }
+.gainers-card { grid-area: gainers; }
+
+.index-card, .card {
+    background: rgba(22, 22, 22, 0.5);
+    border: 1px solid rgba(160, 224, 13, 0.1);
+    border-radius: 16px;
+    padding: 1rem 1.5rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.index-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at top right, rgba(160, 224, 13, 0.1), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.index-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(160, 224, 13, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 20px rgba(160, 224, 13, 0.1);
+}
+
+.index-card:hover::before {
+    opacity: 1;
+}
+
+.index-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.index-title {
+    font-size: 1.3em; /* Reduced from 1.5em */
+    font-weight: bold;
+}
+
+.index-value {
+    font-size: 16px; /* Reduced from 18px */
+}
+
+.index-change {
+    font-size: 13px; /* Reduced from 15px */
+    font-weight: bold;
+}
+
+.green { color: rgb(160, 224, 13); }
+.red { color: #ff3333; }
+
+.section-title {
+    background-color: rgba(13, 13, 13, 0.6);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px); /* For Safari support */
+    border-bottom: 1px solid rgba(160, 224, 13, 0.1);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 1.1em; /* Reduced from 1.2em */
+    margin: -20px -20px 20px -20px;
+}
+
+.news-item {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #2e3b4e;
+}
+.news-item:last-child { border-bottom: none; }
+.news-title { font-weight: bold; font-size: 1em; /* Reduced from 1.1em */ color: white; }
+.news-date { font-size: 0.8em; /* Reduced from 0.9em */ color: #ccc; }
+.news-link { color: lightblue; text-decoration: none; }
+.news-link:hover { text-decoration: underline; }
+
+.scrollable-content {
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+.scrollable-content::-webkit-scrollbar { width: 12px; }
+.scrollable-content::-webkit-scrollbar-track {
+    background-color: #2e3b4e;
+    border-radius: 6px;
+}
+.scrollable-content::-webkit-scrollbar-thumb {
+    background-color: #5c6f8b;
+    border-radius: 6px;
+    min-height: 30px;
+}
+
+.gainer-loser-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 8px 0;
+    border-bottom: 1px dashed rgb(255,255, 255, 0.05);
+}
+.gainer-loser-item:last-child{
+    border-bottom: none;
+}
+.gainer-loser-item img {
+    width: 35px; /* Slightly reduced */
+    height: 35px; /* Slightly reduced */
+    border-radius: 50%;
+    background-color: white;
+    object-fit: contain;
+    margin-right: 10px;
+    flex-shrink: 0;
+}
+.gainer-loser-item .stock-details{
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: center;
+}
+.gainer-loser-item .name {
+    font-weight: bold;
+    font-size: 1em; /* Added for consistency */
+    color: #e0e0e0;
+}
+.gainer-loser-item .green {
+    color: rgb(160, 224, 13); /* Standard green for gainers */
+    font-weight: 600;
+    font-size: 0.9em;
+    margin-left: auto; /* Push the percentage to the right */
+    text-align: right;
+}
+
+.gainer-loser-item .red {
+    color: #F44336; /* Standard red for losers */
+    font-weight: 600;
+    font-size: 0.9em;
+    margin-left: auto; /* Push the percentage to the right */
+    text-align: right;
+}
+
+.gainer-loser-item .value,
+.gainer-loser-item .change {
+    font-size: 0.9em; /* Added for consistency */
+}
+
+/* Responsive adjustments if needed */
+@media (max-width: 768px) {
+    .gainers-card {
+        padding: 10px;
+    }
+    .gainer-loser-item img {
+        width: 30px;
+        height: 30px;
+        margin-right: 10px;
+    }
+    .gainer-loser-item .name,
+    .gainer-loser-item .green,
+    .gainer-loser-item .red {
+        font-size: 0.85em;
+    }
+}
+
+
+.commodity-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border-dashed);
+}
+.commodity-item:last-child {
+    border-bottom: none;
+}
+
+.commodity-item img {
+    width: 24px; /* Reduced from 25px */
+    height: 24px; /* Reduced from 25px */
+    border-radius: 50%;
+    object-fit: contain;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 3px;
+    flex-shrink: 0;
+}
+.commodity-item .name {
+    flex-grow: 1;
+    font-size: 1.1em;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.commodity-item .price {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.commodity-item .change {
+    font-size: 1em;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.chart-card {
+    height: 300px; /* or any height you prefer */
+    position: relative;
+}
+
+.chart-card canvas {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+
+.chart-controls {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.chart-controls select {
+    padding: 4px; /* Reduced padding */
+    border-radius: 5px;
+    background-color: #2e3b4e;
+    color: white;
+    border: 1px solid #5c6f8b;
+    font-size: 0.9em; /* Added for consistency */
+}
+.chart-info {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-left: 20px;
+}
+.chart-value {
+    font-size: 1.3em; /* Reduced from 1.5em */
+    font-weight: bold;
+}
+.chart-percent {
+    font-size: 1.1em; /* Reduced from 1.2em */
+    font-weight: bold;
+}
+
+#stockChart {
+    max-height: 180px;
+    width: 100% !important;
+    height: auto !important;
+}
