@@ -1,0 +1,25 @@
+# 🐍 Core libraries
+Django>=4.2,<5.0
+pandas>=2.0
+yfinance>=0.2.18
+bselib>=0.0.4
+
+# ⚙️ Utilities
+numpy>=1.24
+concurrent-log-handler>=0.9.19
+requests>=2.31
+matplotlib>=3.7
+openpyxl>=3.1
+
+# 🌐 Web and HTTP
+httpx>=0.24
+urllib3>=2.0
+
+# 💻 Windows environment (optional)
+colorama>=0.4
+
+# 🔒 Security and Environment
+python-dotenv>=1.0
+
+# 🧪 Optional for testing/debug
+pytest>=7.3
